@@ -14,4 +14,47 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.22</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hdrhistogram</groupId>
+            <artifactId>HdrHistogram</artifactId>
+            <version>2.1.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quickfixj</groupId>
+            <artifactId>quickfixj-all</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.32</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/uk.co.real-logic/artio-core -->
+        <dependency>
+            <groupId>uk.co.real-logic</groupId>
+            <artifactId>artio-core</artifactId>
+            <version>0.139</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/uk.co.real-logic/artio-session-codecs -->
+        <dependency>
+            <groupId>uk.co.real-logic</groupId>
+            <artifactId>artio-session-codecs</artifactId>
+            <version>0.139</version>
+        </dependency>
+
+        <!--
+
+                api project(':artio-core')
+        api project(':artio-session-codecs')
+        -->
+
+    </dependencies>
+
 </project>
