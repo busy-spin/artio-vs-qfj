@@ -49,12 +49,32 @@
             <version>0.139</version>
         </dependency>
 
-        <!--
-
-                api project(':artio-core')
-        api project(':artio-session-codecs')
-        -->
-
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <mainClass>uk.co.real_logic.artio.dictionary.CodecGenerationTool</mainClass>
+                    <arguments>
+                        <argument>${project.build.directory}/generated-sources/java</argument>
+                        <argument>src/main/resources/FIX44_Custom_Test.xml</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

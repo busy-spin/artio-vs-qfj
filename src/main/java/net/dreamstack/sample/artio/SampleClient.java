@@ -15,17 +15,22 @@
  */
 package net.dreamstack.sample.artio;
 
+import io.aeron.Aeron;
 import io.aeron.archive.Archive;
 import io.aeron.archive.ArchiveThreadingMode;
 import io.aeron.archive.ArchivingMediaDriver;
 import io.aeron.driver.MediaDriver;
+import org.agrona.ErrorHandler;
 import org.agrona.IoUtil;
+import org.agrona.concurrent.Agent;
 import org.agrona.concurrent.SleepingIdleStrategy;
 import uk.co.real_logic.artio.builder.TestRequestEncoder;
 import uk.co.real_logic.artio.engine.EngineConfiguration;
 import uk.co.real_logic.artio.engine.FixEngine;
 import uk.co.real_logic.artio.library.FixLibrary;
 import uk.co.real_logic.artio.library.LibraryConfiguration;
+import uk.co.real_logic.artio.library.LibraryConnectHandler;
+import uk.co.real_logic.artio.library.LibraryScheduler;
 import uk.co.real_logic.artio.library.LibraryUtil;
 import uk.co.real_logic.artio.library.SessionConfiguration;
 import uk.co.real_logic.artio.library.SessionHandler;
@@ -50,11 +55,11 @@ public final class SampleClient
     public static void main(final String[] args)
     {
         // Static configuration lasts the duration of a FIX-Gateway instance
-        final String aeronChannel = "aeron:udp?endpoint=localhost:10002";
+        final String aeronChannel = "aeron:udp?endpoint=localhost:10003";
         final EngineConfiguration configuration = new EngineConfiguration()
-            .libraryAeronChannel(aeronChannel)
-            .monitoringFile(optimalTmpDirName() + File.separator + "fix-client" + File.separator + "engineCounters")
-            .logFileDir("client-logs");
+            .libraryAeronChannel(aeronChannel).defaultHeartbeatIntervalInS(1)
+            .monitoringFile(optimalTmpDirName() + File.separator + "fix-client" + File.separator + "engineCounters1")
+            .logFileDir("client-logs1");
 
         configuration.aeronArchiveContext()
             .aeronDirectoryName(AERON_DIR_NAME)
@@ -99,6 +104,17 @@ public final class SampleClient
 
                 final LibraryConfiguration libraryConfiguration = new LibraryConfiguration()
                     .sessionAcquireHandler((session, acquiredInfo) -> onConnect(session))
+                        .libraryConnectHandler(new LibraryConnectHandler() {
+                            @Override
+                            public void onConnect(FixLibrary fixLibrary) {
+
+                            }
+
+                            @Override
+                            public void onDisconnect(FixLibrary fixLibrary) {
+
+                            }
+                        })
                     .libraryAeronChannels(singletonList(aeronChannel));
 
                 libraryConfiguration.aeronContext()
@@ -127,6 +143,13 @@ public final class SampleClient
 
                     while (true)
                     {
+                        if (!session.isConnected()) {
+                            LibraryUtil.initiate(
+                                    library,
+                                    sessionConfig,
+                                    10_000,
+                                    idleStrategy);
+                        }
                         idleStrategy.idle(library.poll(1));
                     }
 
@@ -154,11 +177,11 @@ public final class SampleClient
         return TEST_REQ_ID_FINDER;
     }
 
-    private static final String AERON_DIR_NAME = "client-aeron";
-    private static final String ARCHIVE_DIR_NAME = "client-aeron-archive";
-    private static final String CONTROL_REQUEST_CHANNEL = "aeron:udp?endpoint=localhost:7010";
-    private static final String CONTROL_RESPONSE_CHANNEL = "aeron:udp?endpoint=localhost:7020";
-    private static final String RECORDING_EVENTS_CHANNEL = "aeron:udp?control-mode=dynamic|control=localhost:7030";
+    private static final String AERON_DIR_NAME = "client-aeron1";
+    private static final String ARCHIVE_DIR_NAME = "client-aeron-archive1";
+    private static final String CONTROL_REQUEST_CHANNEL = "aeron:udp?endpoint=localhost:7011";
+    private static final String CONTROL_RESPONSE_CHANNEL = "aeron:udp?endpoint=localhost:7021";
+    private static final String RECORDING_EVENTS_CHANNEL = "aeron:udp?control-mode=dynamic|control=localhost:7031";
 
     public static void cleanupOldLogFileDir(final EngineConfiguration configuration)
     {

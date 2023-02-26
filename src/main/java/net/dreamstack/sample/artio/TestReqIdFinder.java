@@ -18,6 +18,7 @@ package net.dreamstack.sample.artio;
 import io.aeron.logbuffer.ControlledFragmentHandler.Action;
 import org.agrona.DirectBuffer;
 import uk.co.real_logic.artio.ValidationError;
+import uk.co.real_logic.artio.decoder.NewOrderSingleDecoder;
 import uk.co.real_logic.artio.dictionary.LongDictionary;
 import uk.co.real_logic.artio.fields.AsciiFieldFlyweight;
 import uk.co.real_logic.artio.library.OnMessageInfo;
@@ -38,6 +39,7 @@ public class TestReqIdFinder implements SessionHandler, OtfMessageAcceptor
 
     private final OtfParser parser = new OtfParser(this, new LongDictionary());
     private final MutableAsciiBuffer latestTestRequestMessageBuffer = new MutableAsciiBuffer(new byte[8 * 1024]);
+    private final MutableAsciiBuffer asciiBuffer = new MutableAsciiBuffer(new byte[8 * 1024]);
     private int latestTestRequestMessageLength = 0;
 
     private String testReqId;
@@ -56,6 +58,17 @@ public class TestReqIdFinder implements SessionHandler, OtfMessageAcceptor
     {
         testReqId = null;
         parser.onMessage(buffer, offset, length);
+
+        long newSingleOrder = 'D';
+
+        if(messageType == newSingleOrder) {
+            asciiBuffer.putBytes(0, buffer, offset, length);
+            NewOrderSingleDecoder decoder = new NewOrderSingleDecoder();
+            decoder.decode(asciiBuffer, 0, length);
+
+            char[] symbol = decoder.symbol();
+            System.out.println(symbol);
+        }
 
         if (testReqId != null)
         {
@@ -76,6 +89,8 @@ public class TestReqIdFinder implements SessionHandler, OtfMessageAcceptor
 
     public Action onDisconnect(final int libraryId, final Session session, final DisconnectReason reason)
     {
+        System.out.println(reason);
+        System.out.println("Hello disconnect " + session + " " + session.isConnected());
         return CONTINUE;
     }
 
