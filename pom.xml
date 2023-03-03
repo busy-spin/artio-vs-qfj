@@ -4,9 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>com.github.iaw.artio</groupId>
     <artifactId>artio-vs-qfj</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>code-generator</module>
+        <module>artio-perf-sample</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -14,67 +19,24 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hdrhistogram</groupId>
-            <artifactId>HdrHistogram</artifactId>
-            <version>2.1.12</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quickfixj</groupId>
-            <artifactId>quickfixj-all</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.7.32</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/uk.co.real-logic/artio-core -->
-        <dependency>
-            <groupId>uk.co.real-logic</groupId>
-            <artifactId>artio-core</artifactId>
-            <version>0.139</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/uk.co.real-logic/artio-session-codecs -->
-        <dependency>
-            <groupId>uk.co.real-logic</groupId>
-            <artifactId>artio-session-codecs</artifactId>
-            <version>0.139</version>
-        </dependency>
-
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                    </execution>
-                </executions>
-
-                <configuration>
-                    <mainClass>uk.co.real_logic.artio.dictionary.CodecGenerationTool</mainClass>
-                    <arguments>
-                        <argument>${project.build.directory}/generated-sources/java</argument>
-                        <argument>src/main/resources/FIX44_Custom_Test.xml</argument>
-                    </arguments>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>uk.co.real-logic</groupId>
+                <artifactId>artio-core</artifactId>
+                <version>0.139</version>
+            </dependency>
+            <dependency>
+                <groupId>uk.co.real-logic</groupId>
+                <artifactId>artio-session-codecs</artifactId>
+                <version>0.139</version>
+            </dependency>
+            <dependency>
+                <groupId>uk.co.real-logic</groupId>
+                <artifactId>artio-codecs</artifactId>
+                <version>0.139</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>
