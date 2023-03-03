@@ -11,6 +11,7 @@
     <modules>
         <module>artio-codec-generator</module>
         <module>artio-perf-sample</module>
+        <module>qfj-perf-sample</module>
     </modules>
 
     <properties>

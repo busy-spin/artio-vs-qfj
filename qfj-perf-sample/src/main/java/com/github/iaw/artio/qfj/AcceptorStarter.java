@@ -1,4 +1,4 @@
-package com.github.iaw.artio_perf.qfj;
+package com.github.iaw.artio.qfj;
 
 import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;

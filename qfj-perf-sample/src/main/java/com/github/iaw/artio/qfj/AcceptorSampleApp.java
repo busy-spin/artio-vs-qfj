@@ -1,4 +1,4 @@
-package com.github.iaw.artio_perf.qfj;
+package com.github.iaw.artio.qfj;
 
 import quickfix.Application;
 import quickfix.DoNotSend;
