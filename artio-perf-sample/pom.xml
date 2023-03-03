@@ -61,25 +61,23 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.0</version>
+                <groupId>com.github.iaw.artio</groupId>
+                <artifactId>artio-codec-generator</artifactId>
+                <version>${project.version}</version>
                 <executions>
                     <execution>
+                        <id>artio-perf</id>
                         <goals>
-                            <goal>java</goal>
+                            <goal>artio-gen</goal>
                         </goals>
                         <phase>generate-sources</phase>
+                        <configuration>
+                            <dictFiles>src/main/resources/FIX44.xml</dictFiles>
+                            <generatedSrcDir>${project.build.directory}/generated-sources/</generatedSrcDir>
+                            <parentPackage>com.github.iaw.artio.codecs</parentPackage>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <mainClass>com.github.iaw.artio.code_generator.CodecGenerationTool</mainClass>
-                    <arguments>
-                        <argument>${project.build.directory}/generated-sources/java</argument>
-                        <argument>src/main/resources/FIX44.xml</argument>
-                        <argument>net.dreamstack.sample.artio.codecs</argument>
-                    </arguments>
-                </configuration>
             </plugin>
         </plugins>
     </build>
