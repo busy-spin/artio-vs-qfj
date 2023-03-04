@@ -15,7 +15,7 @@
  */
 package com.github.iaw.artio_perf.artio;
 
-import com.github.iaw.artio.codecs.decoder.NewOrderSingleDecoder;
+import com.github.iaw.artio.codecs.banzai.decoder.NewOrderSingleDecoder;
 import io.aeron.logbuffer.ControlledFragmentHandler.Action;
 import org.agrona.DirectBuffer;
 import uk.co.real_logic.artio.ValidationError;

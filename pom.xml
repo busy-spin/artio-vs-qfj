@@ -10,9 +10,9 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>artio-codec-generator</module>
+        <module>artio-sample-codecs</module>
         <module>artio-perf-sample</module>
         <module>qfj-perf-sample</module>
-        <module>artio-sample-codecs</module>
     </modules>
 
     <properties>
