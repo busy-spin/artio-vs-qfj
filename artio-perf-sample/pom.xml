@@ -47,35 +47,11 @@
 
         <dependency>
             <groupId>com.github.iaw.artio</groupId>
-            <artifactId>code-generator</artifactId>
+            <artifactId>artio-sample-codecs</artifactId>
             <version>${project.version}</version>
         </dependency>
 
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.github.iaw.artio</groupId>
-                <artifactId>artio-codec-generator</artifactId>
-                <version>${project.version}</version>
-                <executions>
-                    <execution>
-                        <id>artio-perf</id>
-                        <goals>
-                            <goal>artio-gen</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <dictFiles>${project.build.sourceDirectory}/../resources/FIX44.xml</dictFiles>
-                            <generatedSrcDir>${project.build.directory}/generated-sources/</generatedSrcDir>
-                            <parentPackage>com.github.iaw.artio.codecs</parentPackage>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 
 
 </project>

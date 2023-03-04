@@ -17,4 +17,50 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/uk.co.real-logic/artio-core -->
+        <dependency>
+            <groupId>uk.co.real-logic</groupId>
+            <artifactId>artio-core</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/uk.co.real-logic/artio-session-codecs -->
+        <dependency>
+            <groupId>uk.co.real-logic</groupId>
+            <artifactId>artio-session-codecs</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.iaw.artio</groupId>
+                <artifactId>artio-codec-generator</artifactId>
+                <version>${project.version}</version>
+                <executions>
+                    <execution>
+                        <id>artio-perf</id>
+                        <goals>
+                            <goal>artio-gen</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <dictFiles>${project.build.sourceDirectory}/../resources/FIX44.xml</dictFiles>
+                            <generatedSrcDir>${project.build.directory}/generated-sources/</generatedSrcDir>
+                            <parentPackage>com.github.iaw.artio.codecs.banzai</parentPackage>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <generatedSourcesDirectory>${project.build.directory}/generated-sources/</generatedSourcesDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
