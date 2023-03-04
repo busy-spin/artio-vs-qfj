@@ -67,7 +67,7 @@
                         </goals>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <dictFiles>src/main/resources/FIX44.xml</dictFiles>
+                            <dictFiles>${project.build.sourceDirectory}/../resources/FIX44.xml</dictFiles>
                             <generatedSrcDir>${project.build.directory}/generated-sources/</generatedSrcDir>
                             <parentPackage>com.github.iaw.artio.codecs</parentPackage>
                         </configuration>

@@ -15,9 +15,6 @@
  */
 package com.github.iaw.artio_perf.artio;
 
-import io.aeron.archive.Archive;
-import io.aeron.archive.ArchiveThreadingMode;
-import io.aeron.archive.ArchivingMediaDriver;
 import io.aeron.driver.MediaDriver;
 import org.agrona.IoUtil;
 import org.agrona.concurrent.SleepingIdleStrategy;
@@ -36,7 +33,6 @@ import java.io.File;
 
 import static io.aeron.driver.ThreadingMode.SHARED;
 import static java.util.Collections.singletonList;
-import static uk.co.real_logic.artio.CommonConfiguration.optimalTmpDirName;
 
 // NB: You should start the {@link SampleServer} class first before starting this client.
 // This client uses a different media driver instance to the SampleServer, so it sets a bunch of
@@ -45,45 +41,30 @@ public final class SampleClient
 {
 
     public static final String ACCEPTOR_COMP_ID = "EXEC";
-    public static final String INITIATOR_COMP_ID = "BANZAI";
+    public static final String INITIATOR_COMP_ID = "BANZAI3";
     private static final TestReqIdFinder TEST_REQ_ID_FINDER = new TestReqIdFinder();
+
+    private static final String CLIENT_AERON_DIR = "client-aeron-dir2";
 
     public static void main(final String[] args)
     {
         // Static configuration lasts the duration of a FIX-Gateway instance
-        final String aeronChannel = "aeron:udp?endpoint=localhost:10003";
+        final String aeronChannel = "aeron:ipc";
         final EngineConfiguration configuration = new EngineConfiguration()
             .libraryAeronChannel(aeronChannel).defaultHeartbeatIntervalInS(1)
-            .monitoringFile(optimalTmpDirName() + File.separator + "fix-client" + File.separator + "engineCounters1")
-            .logFileDir("client-logs1");
-
-        configuration.aeronArchiveContext()
-            .aeronDirectoryName(AERON_DIR_NAME)
-            .controlRequestChannel(CONTROL_REQUEST_CHANNEL)
-            .controlResponseChannel(CONTROL_RESPONSE_CHANNEL);
+                        .logInboundMessages(false).logOutboundMessages(false).logFileDir("client-1");
 
         configuration.aeronContext()
-            .aeronDirectoryName(AERON_DIR_NAME);
+            .aeronDirectoryName(CLIENT_AERON_DIR);
 
         cleanupOldLogFileDir(configuration);
 
         final MediaDriver.Context context = new MediaDriver.Context()
             .threadingMode(SHARED)
             .dirDeleteOnStart(true)
-            .aeronDirectoryName(AERON_DIR_NAME);
+            .aeronDirectoryName(CLIENT_AERON_DIR);
 
-        final Archive.Context archiveContext = new Archive.Context()
-            .threadingMode(ArchiveThreadingMode.SHARED)
-            .deleteArchiveOnStart(true)
-            .replicationChannel("aeron:udp?endpoint=localhost:10009")
-            .aeronDirectoryName(AERON_DIR_NAME)
-            .archiveDirectoryName(ARCHIVE_DIR_NAME);
-
-        archiveContext
-            .controlChannel(CONTROL_REQUEST_CHANNEL)
-            .recordingEventsChannel(RECORDING_EVENTS_CHANNEL);
-
-        try (ArchivingMediaDriver driver = ArchivingMediaDriver.launch(context, archiveContext))
+        try (MediaDriver driver = MediaDriver.launch(context))
         {
             try (FixEngine ignore = FixEngine.launch(configuration))
             {
@@ -91,7 +72,7 @@ public final class SampleClient
                 // a Session object. Each session object can be configured with connection
                 // details and credentials.
                 final SessionConfiguration sessionConfig = SessionConfiguration.builder()
-                    .address("localhost", 9880)
+                    .address("localhost", 9999)
                     .targetCompId(ACCEPTOR_COMP_ID)
                     .senderCompId(INITIATOR_COMP_ID)
                     .build();
@@ -114,7 +95,7 @@ public final class SampleClient
                     .libraryAeronChannels(singletonList(aeronChannel));
 
                 libraryConfiguration.aeronContext()
-                    .aeronDirectoryName(AERON_DIR_NAME);
+                    .aeronDirectoryName(CLIENT_AERON_DIR);
 
                 try (FixLibrary library = SampleUtil.blockingConnect(libraryConfiguration))
                 {
@@ -172,12 +153,6 @@ public final class SampleClient
     {
         return TEST_REQ_ID_FINDER;
     }
-
-    private static final String AERON_DIR_NAME = "client-aeron1";
-    private static final String ARCHIVE_DIR_NAME = "client-aeron-archive1";
-    private static final String CONTROL_REQUEST_CHANNEL = "aeron:udp?endpoint=localhost:7011";
-    private static final String CONTROL_RESPONSE_CHANNEL = "aeron:udp?endpoint=localhost:7021";
-    private static final String RECORDING_EVENTS_CHANNEL = "aeron:udp?control-mode=dynamic|control=localhost:7031";
 
     public static void cleanupOldLogFileDir(final EngineConfiguration configuration)
     {
