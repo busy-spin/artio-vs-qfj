@@ -77,6 +77,12 @@ public final class SampleClient
                     .senderCompId(INITIATOR_COMP_ID)
                     .build();
 
+                final SessionConfiguration sessionConfig2 = SessionConfiguration.builder()
+                        .address("localhost", 9999)
+                        .targetCompId(ACCEPTOR_COMP_ID)
+                        .senderCompId("BANZAI2")
+                        .build();
+
                 final SleepingIdleStrategy idleStrategy = new SleepingIdleStrategy(100);
 
                 final LibraryConfiguration libraryConfiguration = new LibraryConfiguration()
@@ -108,7 +114,15 @@ public final class SampleClient
                         10_000,
                         idleStrategy);
 
-                    while (!session.isActive())
+                    final Session session2 = LibraryUtil.initiate(
+                            library,
+                            sessionConfig2,
+                            10_000,
+                            idleStrategy);
+
+                    System.out.println("############");
+
+                    while (!session.isActive() && !session2.isActive())
                     {
                         idleStrategy.idle(library.poll(1));
                     }
