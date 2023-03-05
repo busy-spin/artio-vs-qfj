@@ -102,7 +102,7 @@ public class SampleAcceptor {
 
                 long startTime = instance.time();
                 long waitTime = 1000L;
-                long throughput = 1000;
+                long throughput = 100_000;
 
                 NewOrderSingleEncoder newOrderSingleEncoder = new NewOrderSingleEncoder();
                 UtcTimestampEncoder utcTimestampEncoder = new UtcTimestampEncoder();

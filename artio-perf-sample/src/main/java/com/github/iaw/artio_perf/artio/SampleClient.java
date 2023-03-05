@@ -22,6 +22,8 @@ import org.agrona.concurrent.AgentRunner;
 import org.agrona.concurrent.BusySpinIdleStrategy;
 import org.agrona.concurrent.CompositeAgent;
 import org.agrona.concurrent.IdleStrategy;
+import org.agrona.concurrent.SleepingIdleStrategy;
+import org.agrona.concurrent.YieldingIdleStrategy;
 import uk.co.real_logic.artio.engine.EngineConfiguration;
 import uk.co.real_logic.artio.engine.FixEngine;
 import uk.co.real_logic.artio.library.FixLibrary;
@@ -32,6 +34,7 @@ import uk.co.real_logic.artio.session.Session;
 
 import java.io.File;
 
+import static io.aeron.driver.ThreadingMode.DEDICATED;
 import static io.aeron.driver.ThreadingMode.SHARED;
 import static java.util.Collections.singletonList;
 
@@ -77,7 +80,7 @@ public final class SampleClient
                 // a Session object. Each session object can be configured with connection
                 // details and credentials.
 
-                final IdleStrategy idleStrategy = new BusySpinIdleStrategy();
+                final IdleStrategy idleStrategy = new SleepingIdleStrategy(100);
 
                 final LibraryConfiguration libraryConfiguration = new LibraryConfiguration()
                     .sessionAcquireHandler((session, acquiredInfo) -> onConnect(session))

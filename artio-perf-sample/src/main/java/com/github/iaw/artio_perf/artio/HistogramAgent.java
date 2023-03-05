@@ -31,6 +31,6 @@ public class HistogramAgent implements Agent {
 
     @Override
     public String roleName() {
-        return null;
+        return "HISTO";
     }
 }
