@@ -22,9 +22,9 @@ public class HistogramAgent implements Agent {
     public int doWork() throws Exception {
         long timeNow = epochClock.time();
         if (timeNow > statPrintDelayInMs + startTime) {
-            lastWindowTotal = histogram.getTotalCount() - lastWindowTotal;
             startTime = timeNow;
-            log.info("Percentiles p100=[{}], p99.99=[{}], total=[{}]", histogram.getValueAtPercentile(100), histogram.getValueAtPercentile(99.99), lastWindowTotal);
+            log.info("Percentiles p100=[{}], p99.99=[{}], total=[{}]", histogram.getValueAtPercentile(100), histogram.getValueAtPercentile(99.99), histogram.getTotalCount());
+            histogram.reset();
         }
         return 0;
     }
