@@ -41,8 +41,8 @@ public final class SampleClient
 
     public static final String ACCEPTOR_COMP_ID = "EXEC";
 
-    public static final String[] INITIATOR_COMP_IDS = new String[]{"BANZAI1", "BANZAI2", "BANZAI3"};
-    public static final int[] CONNECT_PORTS = new int[]{9999, 9999, 9999};
+    public static final String[] INITIATOR_COMP_IDS = new String[]{"BANZAI1"};
+    public static final int[] CONNECT_PORTS = new int[]{9999};
 
     public static final ArtioInitiatorPollingAgent[] agents = new ArtioInitiatorPollingAgent[INITIATOR_COMP_IDS.length];
 

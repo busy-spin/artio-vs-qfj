@@ -1,11 +1,18 @@
 package com.github.iaw.artio_perf.artio;
 
+import com.github.iaw.artio.codecs.banzai.OrdType;
+import com.github.iaw.artio.codecs.banzai.Side;
+import com.github.iaw.artio.codecs.banzai.builder.NewOrderSingleEncoder;
 import io.aeron.driver.MediaDriver;
+import org.agrona.concurrent.IdGenerator;
 import org.agrona.concurrent.IdleStrategy;
 import org.agrona.concurrent.SigInt;
+import org.agrona.concurrent.SnowflakeIdGenerator;
+import org.agrona.concurrent.SystemEpochClock;
 import uk.co.real_logic.artio.CommonConfiguration;
 import uk.co.real_logic.artio.engine.EngineConfiguration;
 import uk.co.real_logic.artio.engine.FixEngine;
+import uk.co.real_logic.artio.fields.UtcTimestampEncoder;
 import uk.co.real_logic.artio.library.AcquiringSessionExistsHandler;
 import uk.co.real_logic.artio.library.FixLibrary;
 import uk.co.real_logic.artio.library.LibraryConfiguration;
@@ -26,7 +33,7 @@ public class SampleAcceptor {
 
     public static final String ACCEPTOR_COMP_ID = "EXEC";
 
-    public static final List<String> validInitiatorIds = Arrays.asList("BANZAI1", "BANZAI2", "BANZAI3");
+    public static final List<String> validInitiatorIds = Arrays.asList("BANZAI1");
 
     private static final String SERVER_AERON_DIR = "client-aeron-dir";
 
@@ -54,6 +61,8 @@ public class SampleAcceptor {
                 .threadingMode(SHARED)
                 .dirDeleteOnStart(true)
                 .aeronDirectoryName(SERVER_AERON_DIR);
+
+        final IdGenerator idGenerator = new SnowflakeIdGenerator(1L);
 
         try (MediaDriver driver = MediaDriver.launch(context);
              FixEngine gateway = FixEngine.launch(configuration))
@@ -83,9 +92,44 @@ public class SampleAcceptor {
 
                 System.out.println("Library connected to engine.");
 
+                SystemEpochClock instance = SystemEpochClock.INSTANCE;
+
+                long startTime = instance.time();
+                long waitTime = 1000L;
+                long throughput = 10_000;
+
+                NewOrderSingleEncoder newOrderSingleEncoder = new NewOrderSingleEncoder();
+                UtcTimestampEncoder utcTimestampEncoder = new UtcTimestampEncoder();
+
+                long counterInThisWindow = 0;
+
                 while (running.get())
                 {
                     idleStrategy.idle(library.poll(1));
+                    if (instance.time() < startTime + waitTime) {
+                        continue;
+                    }
+
+                    long ordId = idGenerator.nextId();
+                    char[] clientOrdId = String.valueOf(ordId).toCharArray();
+
+                    utcTimestampEncoder.encode(instance.time());
+                    newOrderSingleEncoder.transactTime(utcTimestampEncoder.buffer());
+                    newOrderSingleEncoder.ordType(OrdType.LIMIT);
+                    newOrderSingleEncoder.side(Side.BUY);
+                    newOrderSingleEncoder.clOrdID(clientOrdId);
+                    newOrderSingleEncoder.orderQtyData().orderQty(100_000, 0);
+                    newOrderSingleEncoder.instrument().symbol(new char[]{'B','N','A'});
+                    newOrderSingleEncoder.handlInst('1');
+                    newOrderSingleEncoder.header().sendingTime(utcTimestampEncoder.buffer());
+
+                    library.sessions().forEach(session -> {
+                        if (session.isActive()) {
+                            session.trySend(newOrderSingleEncoder);
+                        }
+                    });
+
+                    startTime = instance.time();
                 }
             }
         }
