@@ -44,7 +44,7 @@ public class ArtioInitiatorPollingAgent implements Agent {
         // manageConnection
         // managePolling
         if (session != null && session.isActive()) {
-            return library.poll(1);
+            return library.poll(1000);
         } else {
             if (sessionReply == null) {
                 initiateSession();

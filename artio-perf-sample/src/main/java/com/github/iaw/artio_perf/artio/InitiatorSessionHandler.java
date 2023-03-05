@@ -38,7 +38,8 @@ public class InitiatorSessionHandler implements SessionHandler {
             decoder.decode(asciiBuffer, 0, length);
 
             long timestamp = timestampDecoder.decode(decoder.header().sendingTime());
-            histogram.recordValue(epochClock.time() - timestamp);
+            long diff = epochClock.time() - timestamp;
+            histogram.recordValue(diff < 0 ? 0 : diff);
         }
 
         return null;

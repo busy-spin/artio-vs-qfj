@@ -102,7 +102,7 @@ public class SampleAcceptor {
 
                 long startTime = instance.time();
                 long waitTime = 1000L;
-                long throughput = 25000;
+                long throughput = 1000;
 
                 NewOrderSingleEncoder newOrderSingleEncoder = new NewOrderSingleEncoder();
                 UtcTimestampEncoder utcTimestampEncoder = new UtcTimestampEncoder();
@@ -111,7 +111,7 @@ public class SampleAcceptor {
 
                 while (running.get())
                 {
-                    idleStrategy.idle(library.poll(10));
+                    idleStrategy.idle(library.poll(1000));
                     boolean startNewWindow = instance.time() > (startTime + waitTime);
                     if (startNewWindow) {
                         log.info("Total in this window = [{}]", counterInThisWindow);

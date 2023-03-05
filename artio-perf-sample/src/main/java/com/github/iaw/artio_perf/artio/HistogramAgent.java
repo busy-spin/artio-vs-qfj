@@ -23,11 +23,12 @@ public class HistogramAgent implements Agent {
         long timeNow = epochClock.time();
         if (timeNow > statPrintDelayInMs + startTime) {
             startTime = timeNow;
-            log.info("Percentiles\n p100=[{}]\n p99.99=[{}]\n p99.9=[{}]\n p99=[{}]\n total=[{}]",
+            log.info("Percentiles\n p100=[{}]\n p99.99=[{}]\n p99.9=[{}]\n p99=[{}]\n p1=[{}]\n total=[{}]",
                     histogram.getValueAtPercentile(100),
                     histogram.getValueAtPercentile(99.99),
                     histogram.getValueAtPercentile(99.9),
                     histogram.getValueAtPercentile(99),
+                    histogram.getValueAtPercentile(1),
                     histogram.getTotalCount());
             histogram.reset();
         }
