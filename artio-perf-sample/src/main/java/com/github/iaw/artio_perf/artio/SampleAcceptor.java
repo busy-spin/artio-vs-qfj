@@ -4,17 +4,13 @@ import com.github.iaw.artio.codecs.banzai.OrdType;
 import com.github.iaw.artio.codecs.banzai.Side;
 import com.github.iaw.artio.codecs.banzai.builder.NewOrderSingleEncoder;
 import io.aeron.driver.MediaDriver;
-import io.aeron.driver.ThreadingMode;
 import lombok.extern.slf4j.Slf4j;
 import org.agrona.concurrent.BusySpinIdleStrategy;
 import org.agrona.concurrent.IdGenerator;
 import org.agrona.concurrent.IdleStrategy;
 import org.agrona.concurrent.SigInt;
-import org.agrona.concurrent.SleepingIdleStrategy;
 import org.agrona.concurrent.SnowflakeIdGenerator;
 import org.agrona.concurrent.SystemEpochClock;
-import org.agrona.concurrent.YieldingIdleStrategy;
-import uk.co.real_logic.artio.CommonConfiguration;
 import uk.co.real_logic.artio.engine.EngineConfiguration;
 import uk.co.real_logic.artio.engine.FixEngine;
 import uk.co.real_logic.artio.fields.UtcTimestampEncoder;
@@ -31,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.github.iaw.artio_perf.artio.SampleClient.cleanupOldLogFileDir;
-import static io.aeron.driver.ThreadingMode.SHARED;
+import static io.aeron.driver.ThreadingMode.DEDICATED;
 import static java.util.Collections.singletonList;
 
 @Slf4j
@@ -64,7 +60,7 @@ public class SampleAcceptor {
         cleanupOldLogFileDir(configuration);
 
         final MediaDriver.Context context = new MediaDriver.Context()
-                .threadingMode(SHARED)
+                .threadingMode(DEDICATED)
                 .dirDeleteOnStart(true)
                 .aeronDirectoryName(SERVER_AERON_DIR);
 
@@ -111,7 +107,7 @@ public class SampleAcceptor {
 
                 while (running.get())
                 {
-                    idleStrategy.idle(library.poll(100));
+                    library.poll(10000);
                     boolean startNewWindow = instance.time() > (startTime + waitTime);
                     if (startNewWindow) {
                         log.info("Total in this window = [{}]", counterInThisWindow);
