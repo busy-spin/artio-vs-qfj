@@ -19,8 +19,9 @@ import io.aeron.driver.MediaDriver;
 import org.agrona.IoUtil;
 import org.agrona.concurrent.Agent;
 import org.agrona.concurrent.AgentRunner;
+import org.agrona.concurrent.BusySpinIdleStrategy;
 import org.agrona.concurrent.CompositeAgent;
-import org.agrona.concurrent.SleepingIdleStrategy;
+import org.agrona.concurrent.IdleStrategy;
 import uk.co.real_logic.artio.engine.EngineConfiguration;
 import uk.co.real_logic.artio.engine.FixEngine;
 import uk.co.real_logic.artio.library.FixLibrary;
@@ -76,7 +77,7 @@ public final class SampleClient
                 // a Session object. Each session object can be configured with connection
                 // details and credentials.
 
-                final SleepingIdleStrategy idleStrategy = new SleepingIdleStrategy(100);
+                final IdleStrategy idleStrategy = new BusySpinIdleStrategy();
 
                 final LibraryConfiguration libraryConfiguration = new LibraryConfiguration()
                     .sessionAcquireHandler((session, acquiredInfo) -> onConnect(session))
@@ -105,7 +106,7 @@ public final class SampleClient
                     System.arraycopy(agents, 0, allAgents, 0, agents.length);
                     allAgents[allAgents.length - 1] = histogramAgent;
                     CompositeAgent compositeAgent = new CompositeAgent(allAgents);
-                    AgentRunner agentRunner = new AgentRunner(new SleepingIdleStrategy(), Throwable::printStackTrace, null, compositeAgent);
+                    AgentRunner agentRunner = new AgentRunner(idleStrategy, Throwable::printStackTrace, null, compositeAgent);
 
                     AgentRunner.startOnThread(agentRunner);
 

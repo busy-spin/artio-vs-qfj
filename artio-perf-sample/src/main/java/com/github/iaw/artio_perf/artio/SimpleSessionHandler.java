@@ -37,7 +37,7 @@ public class SimpleSessionHandler implements SessionHandler {
             final OnMessageInfo messageInfo)
     {
         string.wrap(buffer);
-        System.out.printf("%d -> %s%n", session.id(), printer.toString(string, offset, length, messageType));
+        //System.out.printf("%d -> %s%n", session.id(), printer.toString(string, offset, length, messageType));
 
         return CONTINUE;
     }
