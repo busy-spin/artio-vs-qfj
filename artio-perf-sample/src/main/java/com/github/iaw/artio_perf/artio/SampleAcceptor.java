@@ -50,7 +50,7 @@ public class SampleAcceptor {
         final AuthenticationStrategy authenticationStrategy = AuthenticationStrategy.of(validationStrategy);
 
         // Static configuration lasts the duration of a FIX-Gateway instance
-        final String aeronChannel = "aeron:ipc";
+        final String aeronChannel = "aeron:udp?endpoint=localhost:7111";
         final EngineConfiguration configuration = new EngineConfiguration()
                 .libraryAeronChannel(aeronChannel)
                 .defaultHeartbeatIntervalInS(1).authenticationStrategy(authenticationStrategy)
@@ -102,7 +102,7 @@ public class SampleAcceptor {
 
                 long startTime = instance.time();
                 long waitTime = 1000L;
-                long throughput = 1000;
+                long throughput = 50_000;
 
                 NewOrderSingleEncoder newOrderSingleEncoder = new NewOrderSingleEncoder();
                 UtcTimestampEncoder utcTimestampEncoder = new UtcTimestampEncoder();
