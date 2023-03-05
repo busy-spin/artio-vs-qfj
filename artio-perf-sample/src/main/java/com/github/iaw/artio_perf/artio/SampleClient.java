@@ -45,7 +45,6 @@ public final class SampleClient
     public static final int[] CONNECT_PORTS = new int[]{9999, 9999, 9999};
 
     public static final ArtioInitiatorPollingAgent[] agents = new ArtioInitiatorPollingAgent[INITIATOR_COMP_IDS.length];
-    private static final TestReqIdFinder TEST_REQ_ID_FINDER = new TestReqIdFinder();
 
     private static final String CLIENT_AERON_DIR = "client-aeron-dir2";
 
@@ -120,7 +119,7 @@ public final class SampleClient
 
     private static SessionHandler onConnect(final Session session)
     {
-        return TEST_REQ_ID_FINDER;
+        return new InitiatorSessionHandler();
     }
 
     public static void cleanupOldLogFileDir(final EngineConfiguration configuration)
