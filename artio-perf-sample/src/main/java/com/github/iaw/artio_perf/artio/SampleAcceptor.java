@@ -4,6 +4,7 @@ import com.github.iaw.artio.codecs.banzai.OrdType;
 import com.github.iaw.artio.codecs.banzai.Side;
 import com.github.iaw.artio.codecs.banzai.builder.NewOrderSingleEncoder;
 import io.aeron.driver.MediaDriver;
+import io.aeron.driver.ThreadingMode;
 import lombok.extern.slf4j.Slf4j;
 import org.agrona.concurrent.BusySpinIdleStrategy;
 import org.agrona.concurrent.IdGenerator;
@@ -63,7 +64,7 @@ public class SampleAcceptor {
         cleanupOldLogFileDir(configuration);
 
         final MediaDriver.Context context = new MediaDriver.Context()
-                .threadingMode(SHARED)
+                .threadingMode(ThreadingMode.DEDICATED)
                 .dirDeleteOnStart(true)
                 .aeronDirectoryName(SERVER_AERON_DIR);
 
