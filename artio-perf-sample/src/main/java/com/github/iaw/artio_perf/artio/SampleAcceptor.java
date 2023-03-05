@@ -64,7 +64,7 @@ public class SampleAcceptor {
         cleanupOldLogFileDir(configuration);
 
         final MediaDriver.Context context = new MediaDriver.Context()
-                .threadingMode(ThreadingMode.DEDICATED)
+                .threadingMode(SHARED)
                 .dirDeleteOnStart(true)
                 .aeronDirectoryName(SERVER_AERON_DIR);
 
@@ -84,7 +84,7 @@ public class SampleAcceptor {
 
             libraryConfiguration.aeronContext().aeronDirectoryName(SERVER_AERON_DIR);
 
-            final IdleStrategy idleStrategy = new YieldingIdleStrategy();
+            final IdleStrategy idleStrategy = new BusySpinIdleStrategy();
 
             System.out.println("Connecting library to aeron context");
             try (FixLibrary library = SampleUtil.blockingConnect(libraryConfiguration))
@@ -102,7 +102,7 @@ public class SampleAcceptor {
 
                 long startTime = instance.time();
                 long waitTime = 1000L;
-                long throughput = 50_000;
+                long throughput = 25_000;
 
                 NewOrderSingleEncoder newOrderSingleEncoder = new NewOrderSingleEncoder();
                 UtcTimestampEncoder utcTimestampEncoder = new UtcTimestampEncoder();
@@ -111,7 +111,7 @@ public class SampleAcceptor {
 
                 while (running.get())
                 {
-                    idleStrategy.idle(library.poll(1000));
+                    idleStrategy.idle(library.poll(100));
                     boolean startNewWindow = instance.time() > (startTime + waitTime);
                     if (startNewWindow) {
                         log.info("Total in this window = [{}]", counterInThisWindow);

@@ -1,5 +1,6 @@
 package com.github.iaw.artio.qfj;
 
+import lombok.Getter;
 import quickfix.Application;
 import quickfix.DoNotSend;
 import quickfix.FieldNotFound;
@@ -20,6 +21,7 @@ import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TransactTime;
 import quickfix.fix44.MessageCracker;
+import quickfix.fix44.NewOrderSingle;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,6 +30,11 @@ public class AcceptorSampleApp extends MessageCracker implements Application {
 
     private final AtomicBoolean startFiring = new AtomicBoolean(false);
 
+    @Getter
+    private SessionID sessionID;
+    public AcceptorSampleApp() {
+    }
+
     @Override
     public void onCreate(SessionID sessionId) {
 
@@ -35,27 +42,12 @@ public class AcceptorSampleApp extends MessageCracker implements Application {
 
     @Override
     public void onLogon(SessionID sessionId) {
-        startSendingOrders(sessionId);
-    }
-
-    private void startSendingOrders(SessionID sessionId) {
-        try {
-            quickfix.fix44.NewOrderSingle newOrderSingle = new quickfix.fix44.NewOrderSingle(
-                    new ClOrdID(UUID.randomUUID().toString()), new Side(Side.BUY),
-                    new TransactTime(), new OrdType(OrdType.LIMIT));
-            newOrderSingle.set(new OrderQty(100_000));
-            newOrderSingle.set(new Symbol("BNA"));
-            newOrderSingle.set(new HandlInst('1'));
-            Session.sendToTarget(newOrderSingle, sessionId);
-            System.out.println("Order sent " + newOrderSingle.toString());
-        } catch (SessionNotFound e) {
-            throw new RuntimeException(e);
-        }
+        this.sessionID = sessionId;
     }
 
     @Override
     public void onLogout(SessionID sessionId) {
-
+        this.sessionID = null;
     }
 
     @Override
@@ -68,8 +60,6 @@ public class AcceptorSampleApp extends MessageCracker implements Application {
         try {
             String msgType = message.getHeader().getString(MsgType.FIELD);
             if (MsgType.HEARTBEAT.equals(msgType) && startFiring.compareAndSet(false, true)) {
-                System.out.println("Start firing rates.");
-                startSendingOrders(sessionId);
             }
         } catch (Exception e) {
             System.out.println("35 field not found in message " + message);
