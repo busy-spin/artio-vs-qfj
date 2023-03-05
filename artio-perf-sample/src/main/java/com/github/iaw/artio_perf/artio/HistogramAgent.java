@@ -1,0 +1,36 @@
+package com.github.iaw.artio_perf.artio;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.HdrHistogram.Histogram;
+import org.agrona.concurrent.Agent;
+import org.agrona.concurrent.EpochClock;
+import org.agrona.concurrent.SystemEpochClock;
+
+@RequiredArgsConstructor
+@Slf4j
+public class HistogramAgent implements Agent {
+
+    private final Histogram histogram;
+    private EpochClock epochClock = SystemEpochClock.INSTANCE;
+    private long startTime = epochClock.time();
+    private long statPrintDelayInMs = 10 * 1000;
+
+    private long lastWindowTotal = 0;
+
+    @Override
+    public int doWork() throws Exception {
+        long timeNow = epochClock.time();
+        if (timeNow > statPrintDelayInMs + startTime) {
+            lastWindowTotal = histogram.getTotalCount() - lastWindowTotal;
+            startTime = timeNow;
+            log.info("Percentiles p100=[{}], p99.99=[{}], total=[{}]", histogram.getValueAtPercentile(100), histogram.getValueAtPercentile(99.99), lastWindowTotal);
+        }
+        return 0;
+    }
+
+    @Override
+    public String roleName() {
+        return null;
+    }
+}

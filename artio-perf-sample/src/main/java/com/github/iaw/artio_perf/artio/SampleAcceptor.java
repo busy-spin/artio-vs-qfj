@@ -96,7 +96,7 @@ public class SampleAcceptor {
 
                 long startTime = instance.time();
                 long waitTime = 1000L;
-                long throughput = 10_000;
+                long throughput = 1000;
 
                 NewOrderSingleEncoder newOrderSingleEncoder = new NewOrderSingleEncoder();
                 UtcTimestampEncoder utcTimestampEncoder = new UtcTimestampEncoder();
@@ -106,9 +106,17 @@ public class SampleAcceptor {
                 while (running.get())
                 {
                     idleStrategy.idle(library.poll(1));
-                    if (instance.time() < startTime + waitTime) {
+                    boolean startNewWindow = instance.time() < (startTime + waitTime);
+                    if (startNewWindow) {
+                        counterInThisWindow = 0;
+                        startTime = instance.time();
+                    }
+
+                    if (counterInThisWindow >= throughput) {
                         continue;
                     }
+
+                    counterInThisWindow++;
 
                     long ordId = idGenerator.nextId();
                     char[] clientOrdId = String.valueOf(ordId).toCharArray();

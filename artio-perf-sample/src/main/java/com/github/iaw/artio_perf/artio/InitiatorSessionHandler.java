@@ -3,6 +3,7 @@ package com.github.iaw.artio_perf.artio;
 import com.github.iaw.artio.codecs.banzai.decoder.NewOrderCrossDecoder;
 import io.aeron.logbuffer.ControlledFragmentHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.HdrHistogram.Histogram;
 import org.agrona.DirectBuffer;
 import org.agrona.concurrent.SystemEpochClock;
 import uk.co.real_logic.artio.fields.UtcTimestampDecoder;
@@ -27,15 +28,17 @@ public class InitiatorSessionHandler implements SessionHandler {
 
     SystemEpochClock epochClock = SystemEpochClock.INSTANCE;
 
+    public static Histogram histogram = new Histogram(3);
+
     @Override
     public ControlledFragmentHandler.Action onMessage(DirectBuffer buffer, int offset, int length, int libraryId, Session session, int sequenceIndex, long messageType, long timestampInNs, long position, OnMessageInfo messageInfo) {
-        log.info("Message type = [{}]", (char)messageType);
+        //log.info("Message type = [{}]", (char)messageType);
         if (messageType == newOrderSingleMsgType) {
             asciiBuffer.putBytes(0, buffer, offset, length);
             decoder.decode(asciiBuffer, 0, length);
 
             long timestamp = timestampDecoder.decode(decoder.header().sendingTime());
-            log.info("Time diff in ms = [{}]", epochClock.time() - timestamp);
+            histogram.recordValue(epochClock.time() - timestamp);
         }
 
         return null;

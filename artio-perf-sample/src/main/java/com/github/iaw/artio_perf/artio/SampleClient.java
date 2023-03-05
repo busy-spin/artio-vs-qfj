@@ -17,6 +17,7 @@ package com.github.iaw.artio_perf.artio;
 
 import io.aeron.driver.MediaDriver;
 import org.agrona.IoUtil;
+import org.agrona.concurrent.Agent;
 import org.agrona.concurrent.AgentRunner;
 import org.agrona.concurrent.CompositeAgent;
 import org.agrona.concurrent.SleepingIdleStrategy;
@@ -95,12 +96,15 @@ public final class SampleClient
                                 .senderCompId(INITIATOR_COMP_IDS[i])
                                 .targetCompId(ACCEPTOR_COMP_ID)
                                 .build();
-
                         ArtioInitiatorPollingAgent agent = new ArtioInitiatorPollingAgent(sessionConfiguration, library);
                         agents[i] = agent;
                     }
 
-                    CompositeAgent compositeAgent = new CompositeAgent(agents);
+                    HistogramAgent histogramAgent = new HistogramAgent(InitiatorSessionHandler.histogram);
+                    Agent[] allAgents = new Agent[agents.length + 1];
+                    System.arraycopy(agents, 0, allAgents, 0, agents.length);
+                    allAgents[allAgents.length - 1] = histogramAgent;
+                    CompositeAgent compositeAgent = new CompositeAgent(allAgents);
                     AgentRunner agentRunner = new AgentRunner(new SleepingIdleStrategy(), Throwable::printStackTrace, null, compositeAgent);
 
                     AgentRunner.startOnThread(agentRunner);
