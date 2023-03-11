@@ -15,6 +15,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <generatedSourcesDirectory>${project.build.directory}/generated-sources/main/java</generatedSourcesDirectory>
     </properties>
 
     <dependencies>
@@ -28,63 +29,23 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <groupId>com.github.iaw.artio</groupId>
+                <artifactId>sbe-codec-generator</artifactId>
+                <version>1.0-SNAPSHOT</version>
                 <executions>
                     <execution>
-                        <id>generate-1</id>
-                        <phase>generate-sources</phase>
+                        <id>artio-perf</id>
                         <goals>
-                            <goal>java</goal>
+                            <goal>sbe-gen</goal>
                         </goals>
-                        <configuration>
-                            <includeProjectDependencies>false</includeProjectDependencies>
-                            <includePluginDependencies>true</includePluginDependencies>
-                            <mainClass>uk.co.real_logic.sbe.SbeTool</mainClass>
-                            <systemProperties>
-                                <systemProperty>
-                                    <key>sbe.output.dir</key>
-                                    <value>${project.build.directory}/generated-sources/java</value>
-                                </systemProperty>
-                            </systemProperties>
-                            <arguments>
-                                <argument>${project.build.sourceDirectory}/../resources/example-schema.xml</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generate-2</id>
                         <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
                         <configuration>
-                            <includeProjectDependencies>false</includeProjectDependencies>
-                            <includePluginDependencies>true</includePluginDependencies>
-                            <mainClass>uk.co.real_logic.sbe.SbeTool</mainClass>
-                            <systemProperties>
-                                <systemProperty>
-                                    <key>sbe.output.dir</key>
-                                    <value>${project.build.directory}/generated-sources/java</value>
-                                </systemProperty>
-                            </systemProperties>
-                            <arguments>
-                                <argument>${project.build.sourceDirectory}/../resources/example-schema2.xml</argument>
-                            </arguments>
+                            <schemaFiles>${project.build.sourceDirectory}/../resources/example-schema.xml</schemaFiles>
+                            <generatedSrcDir>${generatedSourcesDirectory}/</generatedSrcDir>
+                            <validationXsd>${project.build.sourceDirectory}/../resources/sbe.xsd</validationXsd>
                         </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <workingDirectory>${project.build.directory}/generated-sources/java</workingDirectory>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>uk.co.real-logic</groupId>
-                        <artifactId>sbe-tool</artifactId>
-                        <version>1.27.0</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

@@ -53,20 +53,13 @@ public class SbeGenerator {
 
         String[] args = fileNames.split(";");
         try {
-            /*
-            *
-            *         systemProperties(
-                'sbe.output.dir': generatedDir,
-                'sbe.target.language': 'Java',
-                'sbe.java.generate.interfaces': 'true',
-                'sbe.validation.stop.on.error': 'true',
-                'sbe.decode.unknown.enum.values': 'true',
-                'sbe.xinclude.aware': 'true',
-                'sbe.validation.xsd': validationXsdPath)
-            * */
             System.setProperty("sbe.output.dir", outputDir);
-            System.setProperty("sbe.validation.xsd", validationXsd);
+            System.setProperty("sbe.target.language", "Java");
+            System.setProperty("sbe.java.generate.interfaces", "true");
+            System.setProperty("sbe.validation.stop.on.error", "true");
+            System.setProperty("sbe.decode.unknown.enum.values", "true");
             System.setProperty("sbe.xinclude.aware", "true");
+            System.setProperty("sbe.validation.xsd", validationXsd);
             generate(args);
         } catch (Exception e) {
             throw new RuntimeException(e);

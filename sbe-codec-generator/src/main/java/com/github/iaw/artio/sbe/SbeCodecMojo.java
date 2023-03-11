@@ -14,19 +14,18 @@ public class SbeCodecMojo extends AbstractMojo {
     private String generatedSrcDir;
 
     @Parameter(property = "validationXsd", defaultValue = "Validation xsd file")
-    private String parentPackage;
+    private String validationXsd;
 
     @Parameter(property = "schemaFiles", defaultValue = "List of schema files to use, use ; as separator")
-    private String dictFiles;
+    private String schemaFiles;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        String[] fileNames = dictFiles.split(";");
-
         try {
-
-        } catch (Throwable var5) {
-            var5.printStackTrace();
+            SbeGenerator sbeGenerator = new SbeGenerator();
+            sbeGenerator.generate(schemaFiles, validationXsd, generatedSrcDir);
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 
