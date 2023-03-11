@@ -55,6 +55,7 @@ public class SbeGenerator {
         try {
             System.setProperty("sbe.output.dir", outputDir);
             System.setProperty("sbe.validation.xsd", validationXsd);
+            System.setProperty("sbe.xinclude.aware", "true");
             generate(args);
         } catch (Exception e) {
             throw new RuntimeException(e);
