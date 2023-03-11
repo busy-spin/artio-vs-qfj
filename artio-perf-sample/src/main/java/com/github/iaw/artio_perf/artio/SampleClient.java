@@ -56,7 +56,7 @@ public final class SampleClient
     public static void main(final String[] args)
     {
         // Static configuration lasts the duration of a FIX-Gateway instance
-        final String aeronChannel = "aeron:udp?endpoint=localhost:7010";
+        final String aeronChannel = "aeron:ipc";
         final EngineConfiguration engineConfiguration = new EngineConfiguration()
             .libraryAeronChannel(aeronChannel).defaultHeartbeatIntervalInS(1)
                         .logInboundMessages(false).logOutboundMessages(false)
