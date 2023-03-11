@@ -13,6 +13,9 @@
         <module>artio-sample-codecs</module>
         <module>artio-perf-sample</module>
         <module>qfj-perf-sample</module>
+        <module>agrona-collections</module>
+        <module>sbe-codec-generator</module>
+        <module>sbe-message-codecs</module>
     </modules>
 
     <properties>
