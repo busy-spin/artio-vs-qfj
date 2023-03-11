@@ -38,21 +38,44 @@
                         <goals>
                             <goal>java</goal>
                         </goals>
+                        <configuration>
+                            <includeProjectDependencies>false</includeProjectDependencies>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>uk.co.real_logic.sbe.SbeTool</mainClass>
+                            <systemProperties>
+                                <systemProperty>
+                                    <key>sbe.output.dir</key>
+                                    <value>${project.build.directory}/generated-sources/java</value>
+                                </systemProperty>
+                            </systemProperties>
+                            <arguments>
+                                <argument>${project.build.sourceDirectory}/../resources/example-schema.xml</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-2</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <includeProjectDependencies>false</includeProjectDependencies>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>uk.co.real_logic.sbe.SbeTool</mainClass>
+                            <systemProperties>
+                                <systemProperty>
+                                    <key>sbe.output.dir</key>
+                                    <value>${project.build.directory}/generated-sources/java</value>
+                                </systemProperty>
+                            </systemProperties>
+                            <arguments>
+                                <argument>${project.build.sourceDirectory}/../resources/example-schema2.xml</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
                 <configuration>
-                    <includeProjectDependencies>false</includeProjectDependencies>
-                    <includePluginDependencies>true</includePluginDependencies>
-                    <mainClass>uk.co.real_logic.sbe.SbeTool</mainClass>
-                    <systemProperties>
-                        <systemProperty>
-                            <key>sbe.output.dir</key>
-                            <value>${project.build.directory}/generated-sources/java</value>
-                        </systemProperty>
-                    </systemProperties>
-                    <arguments>
-                        <argument>${project.build.sourceDirectory}/../resources/example-schema.xml</argument>
-                    </arguments>
                     <workingDirectory>${project.build.directory}/generated-sources/java</workingDirectory>
                 </configuration>
                 <dependencies>
