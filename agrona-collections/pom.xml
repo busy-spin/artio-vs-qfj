@@ -23,6 +23,11 @@
             <artifactId>sbe-message-codecs</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.agrona</groupId>
+            <artifactId>agrona</artifactId>
+            <version>1.17.1</version>
+        </dependency>
     </dependencies>
 
 </project>
