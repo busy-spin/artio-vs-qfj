@@ -3,6 +3,7 @@ package com.github.iaw.artio;
 import baseline.CarEncoder;
 import baseline.MessageHeaderEncoder;
 import org.agrona.concurrent.Agent;
+import org.agrona.concurrent.AtomicBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.concurrent.ringbuffer.OneToOneRingBuffer;
 
@@ -38,10 +39,15 @@ public class WriterAgent implements Agent {
             while ((i = ringBuffer.tryClaim(CarEncoder.TEMPLATE_ID, length)) < 0) {
                 // try
             }*/
-            boolean writeComplete = false;
-            while (!writeComplete) {
-                writeComplete = ringBuffer.write(CarEncoder.TEMPLATE_ID, unsafeBuffer, 0, length);
+
+            int claimIndex = -1;
+            while ((claimIndex = ringBuffer.tryClaim(CarEncoder.TEMPLATE_ID, length)) < 0) {
             }
+
+            AtomicBuffer buffer = ringBuffer.buffer();
+            buffer.putBytes(claimIndex, unsafeBuffer, 0, length);
+            ringBuffer.commit(claimIndex);
+
         }
         return 1;
     }

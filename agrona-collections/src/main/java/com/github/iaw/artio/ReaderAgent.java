@@ -47,6 +47,7 @@ public class ReaderAgent implements Agent {
 
         if (messageSoFar == totalPublishCount) {
             barrier.signal();
+            System.out.println("Sending signal");
         }
 
         if (messageSoFar > totalPublishCount) {
