@@ -9,6 +9,8 @@ import org.agrona.concurrent.ringbuffer.OneToOneRingBuffer;
 import org.agrona.concurrent.ringbuffer.RingBufferDescriptor;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Driver {
 
@@ -30,11 +32,26 @@ public class Driver {
         AgentRunner writerAgentRunner = new AgentRunner(waitStrategy, throwable -> {
         }, null, writerAgent);
 
-        AgentRunner.startOnThread(readerAgentRunner);
-        AgentRunner.startOnThread(writerAgentRunner);
+        AgentRunner.startOnThread(readerAgentRunner, threadFactory("reader-", true));
+        AgentRunner.startOnThread(writerAgentRunner, threadFactory("writer-", true));
 
+        System.out.println("About to wait for signal barrier");
         barrier.await();
+        System.out.println("Signal received");
+    }
 
+    public static ThreadFactory threadFactory(String prefix, boolean isDeamon) {
+        return new ThreadFactory() {
+
+            private AtomicInteger atomicInteger = new AtomicInteger(1);
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread thread = new Thread(r);
+                thread.setName(prefix + atomicInteger.getAndIncrement());
+                thread.setDaemon(isDeamon);
+                return thread;
+            }
+        };
     }
 
 }
