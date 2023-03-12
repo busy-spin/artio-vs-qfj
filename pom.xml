@@ -16,6 +16,7 @@
         <module>agrona-collections</module>
         <module>sbe-codec-generator</module>
         <module>sbe-message-codecs</module>
+        <module>aeron-rpc-server</module>
     </modules>
 
     <properties>

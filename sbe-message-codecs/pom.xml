@@ -34,13 +34,25 @@
                 <version>1.0-SNAPSHOT</version>
                 <executions>
                     <execution>
-                        <id>artio-perf</id>
+                        <id>generate-1</id>
                         <goals>
                             <goal>sbe-gen</goal>
                         </goals>
                         <phase>generate-sources</phase>
                         <configuration>
                             <schemaFiles>${project.build.sourceDirectory}/../resources/example-schema.xml</schemaFiles>
+                            <generatedSrcDir>${generatedSourcesDirectory}/</generatedSrcDir>
+                            <validationXsd>${project.build.sourceDirectory}/../resources/sbe.xsd</validationXsd>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-2</id>
+                        <goals>
+                            <goal>sbe-gen</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <schemaFiles>${project.build.sourceDirectory}/../resources/rpc-messages.xml</schemaFiles>
                             <generatedSrcDir>${generatedSourcesDirectory}/</generatedSrcDir>
                             <validationXsd>${project.build.sourceDirectory}/../resources/sbe.xsd</validationXsd>
                         </configuration>
