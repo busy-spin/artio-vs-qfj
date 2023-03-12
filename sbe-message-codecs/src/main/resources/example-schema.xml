@@ -41,6 +41,14 @@
             <validValue name="A">A</validValue>
             <validValue name="B">B</validValue>
             <validValue name="C">C</validValue>
+            <validValue name="D">D</validValue>
+            <validValue name="E">E</validValue>
+            <validValue name="F">F</validValue>
+            <validValue name="G">G</validValue>
+            <validValue name="H">H</validValue>
+            <validValue name="I">I</validValue>
+            <validValue name="J">J</validValue>
+            <validValue name="K">K</validValue>
         </enum>
         <set name="OptionalExtras" encodingType="uint8">
             <choice name="sunRoof">0</choice>

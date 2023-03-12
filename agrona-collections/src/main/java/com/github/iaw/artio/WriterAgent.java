@@ -2,6 +2,7 @@ package com.github.iaw.artio;
 
 import baseline.CarEncoder;
 import baseline.MessageHeaderEncoder;
+import baseline.Model;
 import org.agrona.concurrent.Agent;
 import org.agrona.concurrent.AtomicBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
@@ -13,6 +14,7 @@ public class WriterAgent implements Agent {
 
     private final OneToOneRingBuffer ringBuffer;
     private final long totalPublishCount;
+    private Model model;
 
     private long soFarPublishedCount = 0;
 
@@ -21,9 +23,10 @@ public class WriterAgent implements Agent {
     private final MessageHeaderEncoder headerEncoder = new MessageHeaderEncoder();
     private final CarEncoder carEncoder = new CarEncoder();
 
-    public WriterAgent(OneToOneRingBuffer ringBuffer, long totalPublishCount) {
+    public WriterAgent(OneToOneRingBuffer ringBuffer, long totalPublishCount, Model model) {
         this.ringBuffer = ringBuffer;
         this.totalPublishCount = totalPublishCount;
+        this.model = model;
         unsafeBuffer = new UnsafeBuffer(ByteBuffer.allocateDirect(256));
     }
 
@@ -33,6 +36,7 @@ public class WriterAgent implements Agent {
             soFarPublishedCount++;
             carEncoder.wrapAndApplyHeader(unsafeBuffer, 0, headerEncoder);
             carEncoder.serialNumber(soFarPublishedCount);
+            carEncoder.code(model);
 
             int length = carEncoder.encodedLength() + headerEncoder.encodedLength();
 

@@ -1,5 +1,6 @@
 package com.github.iaw.artio;
 
+import baseline.Model;
 import org.agrona.concurrent.Agent;
 import org.agrona.concurrent.AgentRunner;
 import org.agrona.concurrent.CompositeAgent;
@@ -27,7 +28,7 @@ public class Driver {
         int writerCount = 10;
         Agent[] writers = new Agent[writerCount];
         for (int i = 0; i < writerCount; i++) {
-            WriterAgent writerAgent = new WriterAgent(ringBuffer, totalEventCount / writerCount);
+            WriterAgent writerAgent = new WriterAgent(ringBuffer, totalEventCount / writerCount, Model.values()[i]);
             writers[i] = writerAgent;
         }
 

@@ -2,6 +2,7 @@ package com.github.iaw.artio;
 
 import baseline.CarDecoder;
 import baseline.MessageHeaderDecoder;
+import baseline.Model;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.Agent;
 import org.agrona.concurrent.ShutdownSignalBarrier;
@@ -18,6 +19,8 @@ public class ReaderAgent implements Agent {
 
     private final CarDecoder carDecoder = new CarDecoder();
     private final MessageHeaderDecoder headerDecoder = new MessageHeaderDecoder();
+
+    int[] modelCounter = new int[Model.values().length];
 
     public ReaderAgent(OneToOneRingBuffer ringBuffer, long totalPublishCount, ShutdownSignalBarrier barrier) {
         this.ringBuffer = ringBuffer;
@@ -41,13 +44,17 @@ public class ReaderAgent implements Agent {
 
         messageSoFar++;
 
+        modelCounter[carDecoder.code().ordinal()]++;
+
         if (messageSoFar != 0 && messageSoFar % 1_000_000 == 0) {
             System.out.println("Serial number - " + carDecoder.serialNumber());
         }
 
         if (messageSoFar == totalPublishCount) {
-            barrier.signal();
             System.out.println("Sending signal");
+            for (int i = 0; i < modelCounter.length; i++) {
+                System.out.println("Production of model " + Model.values()[i] + " is " + modelCounter[i]);
+            }
         }
 
         if (messageSoFar > totalPublishCount) {
