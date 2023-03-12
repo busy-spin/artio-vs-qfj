@@ -1,6 +1,8 @@
 package com.github.iaw.artio;
 
+import org.agrona.concurrent.Agent;
 import org.agrona.concurrent.AgentRunner;
+import org.agrona.concurrent.CompositeAgent;
 import org.agrona.concurrent.IdleStrategy;
 import org.agrona.concurrent.ShutdownSignalBarrier;
 import org.agrona.concurrent.UnsafeBuffer;
@@ -22,7 +24,14 @@ public class Driver {
         OneToOneRingBuffer ringBuffer = new OneToOneRingBuffer(new UnsafeBuffer(ByteBuffer.allocate(capacity)));
 
         ReaderAgent readerAgent = new ReaderAgent(ringBuffer, totalEventCount, barrier);
-        WriterAgent writerAgent = new WriterAgent(ringBuffer, totalEventCount);
+        int writerCount = 10;
+        Agent[] writers = new Agent[writerCount];
+        for (int i = 0; i < writerCount; i++) {
+            WriterAgent writerAgent = new WriterAgent(ringBuffer, totalEventCount / writerCount);
+            writers[i] = writerAgent;
+        }
+
+        CompositeAgent compositeAgent = new CompositeAgent(writers);
 
         IdleStrategy waitStrategy = new YieldingIdleStrategy();
 
@@ -30,7 +39,7 @@ public class Driver {
         }, null, readerAgent);
 
         AgentRunner writerAgentRunner = new AgentRunner(waitStrategy, throwable -> {
-        }, null, writerAgent);
+        }, null, compositeAgent);
 
         AgentRunner.startOnThread(readerAgentRunner, threadFactory("reader-", true));
         AgentRunner.startOnThread(writerAgentRunner, threadFactory("writer-", true));
