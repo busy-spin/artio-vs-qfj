@@ -35,10 +35,6 @@ public class WriterAgent implements Agent {
             carEncoder.serialNumber(soFarPublishedCount);
 
             int length = carEncoder.encodedLength() + headerEncoder.encodedLength();
-/*            int i = -1;
-            while ((i = ringBuffer.tryClaim(CarEncoder.TEMPLATE_ID, length)) < 0) {
-                // try
-            }*/
 
             int claimIndex = -1;
             while ((claimIndex = ringBuffer.tryClaim(CarEncoder.TEMPLATE_ID, length)) < 0) {
