@@ -43,7 +43,7 @@ public class Driver {
     public static ThreadFactory threadFactory(String prefix, boolean isDeamon) {
         return new ThreadFactory() {
 
-            private AtomicInteger atomicInteger = new AtomicInteger(1);
+            private final AtomicInteger atomicInteger = new AtomicInteger(1);
             @Override
             public Thread newThread(Runnable r) {
                 Thread thread = new Thread(r);
