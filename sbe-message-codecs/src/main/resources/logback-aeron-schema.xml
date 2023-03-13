@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
+                   xmlns:xi="http://www.w3.org/2001/XInclude"
+                   package="baseline"
+                   id="1"
+                   version="0"
+                   semanticVersion="5.2"
+                   description="Example base schema which can be extended."
+                   byteOrder="littleEndian">
+    <xi:include href="common-types.xml"/>
+    <sbe:message name="LogEvent" id="1" description="Log Event">
+        <field name="timestamp" id="1" type="uint64"/>
+        <field name="level" id="2" type="uint32"/>
+        <data name="profile" id="3" type="varStringEncoding"/>
+        <data name="serviceName" id="4" type="varStringEncoding"/>
+        <data name="instanceId" id="5" type="varStringEncoding"/>
+        <data name="formattedMessage" id="6" type="varStringEncoding"/>
+        <data name="hostname" id="7" type="varStringEncoding"/>
+        <data name="loggerName" id="8" type="varStringEncoding"/>
+    </sbe:message>
+</sbe:messageSchema>

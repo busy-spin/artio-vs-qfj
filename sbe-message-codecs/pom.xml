@@ -57,6 +57,18 @@
                             <validationXsd>${project.build.sourceDirectory}/../resources/sbe.xsd</validationXsd>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>generate-3</id>
+                        <goals>
+                            <goal>sbe-gen</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <schemaFiles>${project.build.sourceDirectory}/../resources/logback-aeron-schema.xml</schemaFiles>
+                            <generatedSrcDir>${generatedSourcesDirectory}/</generatedSrcDir>
+                            <validationXsd>${project.build.sourceDirectory}/../resources/sbe.xsd</validationXsd>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
