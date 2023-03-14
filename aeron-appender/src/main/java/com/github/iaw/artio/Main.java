@@ -11,6 +11,8 @@ import org.agrona.concurrent.SystemEpochClock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class Main {
     public static void main(String[] args) {
 
@@ -34,12 +36,13 @@ public class Main {
         Logger logger = LoggerFactory.getLogger("test");
         SystemEpochClock epochClock = SystemEpochClock.INSTANCE;
         long startTime = epochClock.time();
+        AtomicLong counter = new AtomicLong();
         while (true) {
             if (epochClock.time() < startTime + 1000) {
                 idleStrategy.idle();
             } else {
                 startTime = epochClock.time();
-                logger.info("Hello {}", "world");
+                logger.info("Hello {} , {}", "world", counter.getAndIncrement());
             }
 
         }

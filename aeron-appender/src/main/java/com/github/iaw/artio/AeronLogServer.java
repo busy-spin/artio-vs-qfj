@@ -42,6 +42,9 @@ public class AeronLogServer implements Agent {
         logEventDecoder.wrap(buffer, offset + headerLength, actingLength, actingVersion);
 
         System.out.println(logEventDecoder.profile());
+        System.out.println(logEventDecoder.serviceName());
+        System.out.println(logEventDecoder.instanceId());
+        System.out.println(logEventDecoder.formattedMessage());
     }
 
     @Override
