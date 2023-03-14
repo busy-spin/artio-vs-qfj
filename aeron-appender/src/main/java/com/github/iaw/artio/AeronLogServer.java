@@ -34,7 +34,14 @@ public class AeronLogServer implements Agent {
                            int offset,
                            int length,
                            Header header) {
+        headerDecoder.wrap(buffer, offset);
+        int actingLength = headerDecoder.blockLength();
+        int actingVersion = headerDecoder.version();
+        int headerLength = headerDecoder.encodedLength();
 
+        logEventDecoder.wrap(buffer, offset + headerLength, actingLength, actingVersion);
+
+        System.out.println(logEventDecoder.profile());
     }
 
     @Override

@@ -3,6 +3,10 @@
 <configuration debug="true">
 
   <appender name="STDOUT" class="com.github.iaw.artio.AeronAppender">
+    <profile>golive1</profile>
+    <serviceName>dataloader-service</serviceName>
+    <instanceId>1</instanceId>
+    <aeronChannel>aeron:udp?endpoint=localhost:10001</aeronChannel>
     <encoder>
       <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -%kvp- %msg%n</pattern>
     </encoder>

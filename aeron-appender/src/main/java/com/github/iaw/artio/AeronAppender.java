@@ -88,4 +88,8 @@ public class AeronAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     public void setInstanceId(String instanceId) {
         this.instanceId = instanceId;
     }
+
+    public void setAeronChannel(String aeronChannel) {
+        this.aeronChannel = aeronChannel;
+    }
 }
