@@ -43,7 +43,7 @@ public class Main {
 
     private static void logInAThread() {
         IdleStrategy idleStrategy = new SleepingIdleStrategy();
-        Logger logger = LoggerFactory.getLogger("test");
+        Logger logger = LoggerFactory.getLogger(Main.class);
         SystemEpochClock epochClock = SystemEpochClock.INSTANCE;
         long startTime = epochClock.time();
         AtomicLong counter = new AtomicLong();
