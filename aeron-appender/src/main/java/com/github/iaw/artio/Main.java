@@ -11,10 +11,12 @@ import org.agrona.concurrent.SystemEpochClock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         MediaDriver.Context context = new MediaDriver.Context().aeronDirectoryName(CommonContext.getAeronDirectoryName() + "log-server")
                 .dirDeleteOnStart(true).dirDeleteOnShutdown(true).threadingMode(ThreadingMode.SHARED);
@@ -31,14 +33,22 @@ public class Main {
 
         AgentRunner.startOnThread(agentRunner);
 
-        IdleStrategy idleStrategy = new SleepingIdleStrategy();
+        int threadCount = 3;
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        for (int i = 0; i < threadCount; i++) {
+            executorService.submit(Main::logInAThread);
+            Thread.sleep(3_000);
+        }
+    }
 
+    private static void logInAThread() {
+        IdleStrategy idleStrategy = new SleepingIdleStrategy();
         Logger logger = LoggerFactory.getLogger("test");
         SystemEpochClock epochClock = SystemEpochClock.INSTANCE;
         long startTime = epochClock.time();
         AtomicLong counter = new AtomicLong();
         while (true) {
-            if (epochClock.time() < startTime + 1000) {
+            if (epochClock.time() < startTime + 10_000) {
                 idleStrategy.idle();
             } else {
                 startTime = epochClock.time();

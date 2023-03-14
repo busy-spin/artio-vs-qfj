@@ -71,6 +71,7 @@ public class AeronAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         logEventEncoder.formattedMessage(new String(message));
         logEventEncoder.hostname(hostname);
         logEventEncoder.loggerName(logEvent.getLoggerName());
+        logEventEncoder.threadName(logEvent.getThreadName());
 
         int length = logEventEncoder.encodedLength() + headerEncoder.encodedLength();
 

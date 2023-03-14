@@ -17,5 +17,6 @@
         <data name="formattedMessage" id="6" type="varStringEncoding"/>
         <data name="hostname" id="7" type="varStringEncoding"/>
         <data name="loggerName" id="8" type="varStringEncoding"/>
+        <data name="threadName" id="9" type="varStringEncoding"/>
     </sbe:message>
 </sbe:messageSchema>
