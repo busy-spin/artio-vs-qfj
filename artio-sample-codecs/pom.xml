@@ -46,7 +46,7 @@
                         </goals>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <dictFiles>${project.build.sourceDirectory}/../resources/FIX44.xml</dictFiles>
+                            <dictFiles>${project.basedir}/src/main/resources/FIX44.xml</dictFiles>
                             <generatedSrcDir>${generatedSourcesDirectory}/</generatedSrcDir>
                             <parentPackage>com.github.iaw.artio.codecs.banzai</parentPackage>
                         </configuration>
