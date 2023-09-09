@@ -1,15 +1,26 @@
 package com.github.iaw.aeron.subscriber;
 
+import baseline.CarDecoder;
+import baseline.MessageHeaderDecoder;
 import io.aeron.Aeron;
 import io.aeron.Subscription;
 import lombok.extern.slf4j.Slf4j;
+import org.HdrHistogram.Histogram;
 import org.agrona.concurrent.Agent;
+import org.agrona.concurrent.SystemEpochClock;
 
 @Slf4j
 public class HelloSubscriberAgent implements Agent {
 
     private final Aeron aeron;
     private final Subscription subscription;
+
+    private MessageHeaderDecoder headerDecoder = new MessageHeaderDecoder();
+    private CarDecoder carDecoder = new CarDecoder();
+    private Histogram histogram = new Histogram(3);
+
+    private final int histogramReportInterval = 5_000;
+    private long histogramReportStartTime = 0;
 
     public HelloSubscriberAgent(Aeron aeron) {
         this.aeron = aeron;
@@ -19,15 +30,23 @@ public class HelloSubscriberAgent implements Agent {
     @Override
     public void onStart() {
         log.info("Subscriber agent started.");
+        histogramReportStartTime = SystemEpochClock.INSTANCE.time();
     }
 
     @Override
     public int doWork() throws Exception {
-        subscription.poll((buffer, offset, length, header) -> {
-            final String stringAscii = buffer.getStringAscii(offset, length);
-            log.info("{}", stringAscii);
+        if (SystemEpochClock.INSTANCE.time() - histogramReportStartTime > histogramReportInterval) {
+            histogramReportStartTime = SystemEpochClock.INSTANCE.time();
+            log.info("p99=[{}] p99.99=[{}] p100=[{}]", histogram.getValueAtPercentile(99),
+                    histogram.getValueAtPercentile(99.99),
+                    histogram.getValueAtPercentile(100.0));
+        }
+
+        return subscription.poll((buffer, offset, length, header) -> {
+            carDecoder.wrapAndApplyHeader(buffer, offset, headerDecoder);
+            final long serialNumber = carDecoder.serialNumber();
+            histogram.recordValue(SystemEpochClock.INSTANCE.time() - serialNumber);
         }, 10);
-        return 0;
     }
 
     @Override
