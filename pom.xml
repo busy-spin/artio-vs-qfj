@@ -18,6 +18,9 @@
         <module>sbe-message-codecs</module>
         <module>aeron-rpc-server</module>
         <module>aeron-appender</module>
+        <module>aeron-media-driver</module>
+        <module>aeron-publisher</module>
+        <module>aeron-subscriber</module>
     </modules>
 
     <properties>
