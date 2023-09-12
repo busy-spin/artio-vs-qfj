@@ -2,20 +2,26 @@ package com.github.iaw.aeron.publisher;
 
 import io.aeron.Aeron;
 import io.aeron.driver.MediaDriver;
+import io.aeron.driver.ThreadingMode;
 import lombok.extern.slf4j.Slf4j;
-import org.agrona.concurrent.AgentRunner;
-import org.agrona.concurrent.NoOpIdleStrategy;
-import org.agrona.concurrent.ShutdownSignalBarrier;
-import org.agrona.concurrent.SigInt;
+import org.agrona.concurrent.*;
 
 @Slf4j
 public class AeronPublisher {
 
     public static void main(String[] args) {
-        Aeron.Context aeronCtx = new Aeron.Context()
-                .aeronDirectoryName(MediaDriver.Context.getAeronDirectoryName() + "md");
+        final String aeronDir = Aeron.Context.getAeronDirectoryName() + "-publisher";
+        final MediaDriver.Context mdCtx = new MediaDriver.Context()
+                .aeronDirectoryName(aeronDir);
+        mdCtx.threadingMode(ThreadingMode.SHARED);
+        mdCtx.senderIdleStrategy(new SleepingIdleStrategy());
+        mdCtx.receiverIdleStrategy(new SleepingIdleStrategy());
+        mdCtx.conductorIdleStrategy(new SleepingIdleStrategy());
+
+        final Aeron.Context aeronCtx = new Aeron.Context().aeronDirectoryName(aeronDir);
+
         final ShutdownSignalBarrier signalBarrier = new ShutdownSignalBarrier();
-        try (Aeron aeron = Aeron.connect(aeronCtx);
+        try (MediaDriver md = MediaDriver.launch(mdCtx); Aeron aeron = Aeron.connect(aeronCtx);
              AgentRunner agentRunner = publisherAgentRunner(aeron)) {
 
             AgentRunner.startOnThread(agentRunner);
@@ -31,7 +37,7 @@ public class AeronPublisher {
     }
 
     public static AgentRunner publisherAgentRunner(Aeron aeron) {
-        return new AgentRunner(new NoOpIdleStrategy(), error -> {}, null, new HelloPublisherAgent(aeron));
+        return new AgentRunner(new SleepingIdleStrategy(), error -> {}, null, new HelloPublisherAgent(aeron));
     }
 
 }

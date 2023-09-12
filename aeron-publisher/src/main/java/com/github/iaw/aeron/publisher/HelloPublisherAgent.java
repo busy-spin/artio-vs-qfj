@@ -23,13 +23,26 @@ public class HelloPublisherAgent implements Agent {
     private final Aeron aeron;
     private final ConcurrentPublication publication;
 
+    private final int messagePerMs = 1;
+    private long lastCounterRestartMs;
+    private int counter = 0;
+
     public HelloPublisherAgent(Aeron aeron) {
         this.aeron = aeron;
-        publication = aeron.addPublication("aeron:ipc", 1001);
+        publication = aeron.addPublication("aeron:udp?control-mode=dynamic|control=0.0.0.0:23009", 1001);
     }
 
     @Override
     public int doWork() throws Exception {
+        if (lastCounterRestartMs < SystemEpochClock.INSTANCE.time()) {
+            lastCounterRestartMs = SystemEpochClock.INSTANCE.time();
+            counter = 0;
+        }
+
+        if (counter == messagePerMs) {
+            return 0;
+        }
+
         carEncoder.wrapAndApplyHeader(unsafeBuffer, 0, messageHeaderEncoder);
         carEncoder.serialNumber(SystemEpochClock.INSTANCE.time());
         carEncoder.code(Model.A);
@@ -37,6 +50,7 @@ public class HelloPublisherAgent implements Agent {
         int length = messageHeaderEncoder.encodedLength() + carEncoder.encodedLength();
 
         publication.offer(unsafeBuffer, 0, length);
+        counter++;
         return 1;
     }
 
@@ -47,6 +61,7 @@ public class HelloPublisherAgent implements Agent {
 
     @Override
     public void onStart() {
+        lastCounterRestartMs = SystemEpochClock.INSTANCE.time();
         log.info("Starting the agent.");
     }
 

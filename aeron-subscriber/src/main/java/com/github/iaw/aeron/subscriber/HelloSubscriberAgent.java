@@ -4,6 +4,7 @@ import baseline.CarDecoder;
 import baseline.MessageHeaderDecoder;
 import io.aeron.Aeron;
 import io.aeron.Subscription;
+import io.aeron.logbuffer.FragmentHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.HdrHistogram.Histogram;
 import org.agrona.concurrent.Agent;
@@ -22,9 +23,13 @@ public class HelloSubscriberAgent implements Agent {
     private final int histogramReportInterval = 5_000;
     private long histogramReportStartTime = 0;
 
+    final FragmentHandler fragmentHandler = getFragmentHandler();
+
+    private int counter = 0;
+
     public HelloSubscriberAgent(Aeron aeron) {
         this.aeron = aeron;
-        subscription = this.aeron.addSubscription("aeron:ipc", 1001);
+        subscription = this.aeron.addSubscription("aeron:udp?endpoint=0.0.0.0:0|control=localhost:23009|control-mode=dynamic", 1001);
     }
 
     @Override
@@ -35,18 +40,25 @@ public class HelloSubscriberAgent implements Agent {
 
     @Override
     public int doWork() throws Exception {
-        if (SystemEpochClock.INSTANCE.time() - histogramReportStartTime > histogramReportInterval) {
+        if (SystemEpochClock.INSTANCE.time() - histogramReportStartTime >= histogramReportInterval) {
             histogramReportStartTime = SystemEpochClock.INSTANCE.time();
-            log.info("p99=[{}] p99.99=[{}] p100=[{}]", histogram.getValueAtPercentile(99),
+            log.info("p99=[{}] p99.99=[{}] p100=[{}], throughput=[{}]", histogram.getValueAtPercentile(99),
                     histogram.getValueAtPercentile(99.99),
-                    histogram.getValueAtPercentile(100.0));
+                    histogram.getValueAtPercentile(100.0), counter);
+
+            counter = 0;
         }
 
-        return subscription.poll((buffer, offset, length, header) -> {
+        return subscription.poll(fragmentHandler, 10);
+    }
+
+    private FragmentHandler getFragmentHandler() {
+        return (buffer, offset, length, header) -> {
             carDecoder.wrapAndApplyHeader(buffer, offset, headerDecoder);
             final long serialNumber = carDecoder.serialNumber();
             histogram.recordValue(SystemEpochClock.INSTANCE.time() - serialNumber);
-        }, 10);
+            counter++;
+        };
     }
 
     @Override
