@@ -26,12 +26,20 @@
         </dependency>
     </dependencies>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/busy-spin/aeron-maven-plugins</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <build>
         <plugins>
             <plugin>
-                <groupId>com.github.iaw.artio</groupId>
+                <groupId>io.github.busy-spin</groupId>
                 <artifactId>sbe-codec-generator</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0.0</version>
                 <executions>
                     <execution>
                         <id>generate-1</id>
